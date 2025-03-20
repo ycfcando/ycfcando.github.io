@@ -1,0 +1,23 @@
+# 类型检测
+
+---
+
+类型检测顾名思义就是检测**数据**的类型是否符合预期，要实现它并不难，但需先**定义**合理的标准，满足场景的情况下，也统一结果。
+
+### 标准
+
+- [x] 🎉 能够检测包括 `undefined` `null` 基本类型；
+- [x] 🍀 能够检测 `function` `object` `array` 等所有内置引用类型；  
+- [x] 🏁 要求返回是否，即判断真假；
+
+### 实现
+实现的思路会按思考问题的先后顺序，以**步骤**的形式呈现。
+1. 各种数据是否有标识能将他们区分开？且可以拿来判断？有，`Symbol.toStringTag` 存在于原型中，可以拿来判断。给 `Object.prototype.toString` 绑定`instance` 实例，然后调用可以取到。  
+2. 是否有缺陷？该如何弥补？有，无法区分 `string` `number` `boolean` 的基本类型和引用类型。这些可以使用 `typeof` 判断。
+3. 以何种形式使用？传两个参数，`instance` 实例和 `Constructor` 构造函数，`Constructor` 可选。
+
+```js
+function checkingType(data) {
+  return Object.prototype.toString.call(data).slice(8, -1);
+}
+```

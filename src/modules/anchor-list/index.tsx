@@ -2,11 +2,12 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import type { HeadingInterfase } from "@/types/remark-plugins";
 
 export default function AnchorList({
-  headings,
+  headings = [],
 }: {
-  headings: { id: string; text: string }[];
+  headings: HeadingInterfase[];
 }) {
   const [activeHeading, setActiveHeading] = useState(null);
 

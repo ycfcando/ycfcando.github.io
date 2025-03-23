@@ -1,12 +1,11 @@
 "use server";
 
-// import Markdown from "@/modules/markdown";
-import Markdown from "@/modules/markdown-x";
+import MDXServer from "@/modules/mdx-server-build";
 
 export default async function Page() {
   return (
     <div className="w-full flex justify-between">
-      <Markdown name="01.类型检测" />
+      <MDXServer name={"demo"} />
     </div>
   );
 }

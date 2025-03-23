@@ -1,20 +1,24 @@
-import fs from "fs";
-import path from "node:path";
 import * as runtime from "react/jsx-runtime";
-import { evaluate } from "@mdx-js/mdx";
+import { compile, run } from "@mdx-js/mdx";
+import matter from "gray-matter";
+import remarkGfm from "remark-gfm";
+import rehypeHighlight from "rehype-highlight";
+import { remarkAchors } from "../../lib/remark-plugins";
 
-export function getMarkdownFile(filename: string) {
-  const filePath = path.join(process.cwd(), "md", `${filename}.mdx`);
-  const file = fs.readFileSync(filePath, "utf8");
+/* markdown to react: 运行时/函数式/服务端&客户端 */
+export async function parseMDXToReactFn(file: string) {
+  // 提取 Front Matter 和删除 YAML front matter 后的内容
+  const { data: frontMatter, content: noneFrontMatterContent } = matter(file);
 
-  return file;
-}
+  // markdown 转成 React 文本并返回 anchor 信息
+  const { value, data } = await compile(noneFrontMatterContent, {
+    remarkPlugins: [remarkGfm, remarkAchors],
+    rehypePlugins: [rehypeHighlight],
+    outputFormat: "function-body",
+  });
 
-/* 函数形式：markdown转react */
-export async function parseMarkdownX(filename: string) {
-  const file = getMarkdownFile(filename);
+  // React 文本转成 React 组件
+  const { default: MDXComponent } = await run(value, runtime);
 
-  const { default: MDXContent } = await evaluate(file, runtime);
-
-  return { MDX: MDXContent };
+  return { frontMatter, MDXComponent, headings: data?.headings };
 }

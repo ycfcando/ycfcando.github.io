@@ -9,7 +9,7 @@ const ArticleIndex = () => {
   >([]);
 
   useEffect(() => {
-    const articleElement = document.getElementById("markdown-x");
+    const articleElement = document.getElementById("mdx");
     if (!articleElement) return;
 
     const extractedHeadings = Array.from(
@@ -24,7 +24,7 @@ const ArticleIndex = () => {
   }, []);
 
   return (
-    <div className="flex-none w-64 p-4">
+    <div className="sticky p-4 top-[48px] z-50 h-[calc(100vh-48px)] transition-all duration-300 col-span-1">
       <ul className="top-0 right-0">
         {headings.map(({ text, id, level }) => (
           <li key={id} className={`my-2 ${level === "H3" ? "ml-4" : ""}`}>

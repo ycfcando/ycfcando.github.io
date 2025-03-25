@@ -1,8 +1,12 @@
-// "use server";
+import { getAllMDXSlugs } from "@/lib/file";
+import {
+  MDXForBuild,
+  MDXContainer,
+  MDXAnchorList,
+} from "@/modules/mdx-server-build";
+import AnchorList from "@/modules/anchor-list";
 
-// import { join } from "node:path";
-import MDXServerBuild from "@/modules/mdx-server-build";
-// import { getFolderFiles } from "@/lib/file";
+const slugs = await getAllMDXSlugs();
 
 export default async function Page({
   params,
@@ -10,23 +14,42 @@ export default async function Page({
   params: Promise<{ slug: string[] }>;
 }) {
   const { slug } = await params;
-  const filePath = decodeURIComponent(slug.join("/"));
+  const slugDecode = slug?.map((slugItem) => decodeURIComponent(slugItem));
+
+  const { isMDX, MDXComponent, headings } = await (async () => {
+    const currentSlug = slugs.find((slugItem) => {
+      const isEvery = slugItem.slug.every((path) => slugDecode.includes(path));
+
+      return slugDecode.length === slugItem.slug.length && isEvery;
+    });
+    if (currentSlug) {
+      const {
+        default: MDXComponent,
+        frontmatter,
+        headings,
+      } = await import(`@/mdx/${decodeURIComponent(slug.join("/"))}.mdx`);
+      return {
+        isMDX: true,
+        MDXComponent,
+        frontmatter,
+        headings,
+      };
+    }
+    return { isMDX: false, MDXComponent: null };
+  })();
 
   return (
     <div className="grid col-span-5 grid-cols-6 relative">
-      <MDXServerBuild path={filePath} />
+      {isMDX && (
+        <MDXForBuild>
+          <MDXContainer mdxFn={() => <MDXComponent />} />
+          <MDXAnchorList>{<AnchorList headings={headings} />}</MDXAnchorList>
+        </MDXForBuild>
+      )}
     </div>
   );
 }
 
-// export async function generateStaticParams() {
-//   const filenames = await getFolderFiles(
-//     join(process.cwd(), "src", "mdx", "javascript")
-//   );
-
-//   return filenames.map((filename) => ({
-//     slug: [filename],
-//   }));
-// }
-
-// export const dynamicParams = false;
+export async function generateStaticParams() {
+  return slugs;
+}

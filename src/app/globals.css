@@ -40,8 +40,10 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
-  --nav-foreground: oklch(0.205 0 0 / 0.8);
+  --nav-foreground: oklch(0.205 0 0 / 0.6);
   --code-background: oklch(0.97 0 0);
+  --skeleton-border: oklch(0.94 0 0 / 0.6);
+  --icon-theme-filter: none;
 }
 
 .dark {
@@ -79,6 +81,8 @@
   --sidebar-ring: oklch(0.439 0 0);
   --nav-foreground: oklch(0.985 0 0 / 0.8);
   --code-background: oklch(0.27 0.01 0);
+  --skeleton-border: oklch(0.94 0 0 / 0.1);
+  --icon-theme-filter: invert(1) hue-rotate(180deg); /* 反色 + 色相翻转 */
 }
 
 @theme inline {
@@ -165,6 +169,15 @@
   --tw-prose-pre-bg: oklch(0.29 0.02 264.34);
   --tw-prose-body: var(--foreground);
   font-size: var(--text-sm);
+}
+
+.typography h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  scroll-margin-top: 48px;
 }
 
 @layer components {

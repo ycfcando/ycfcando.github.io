@@ -2,7 +2,7 @@
 
 import { Sidebar } from "@/modules/sidebar";
 import type { ParentSiderInterface } from "@/modules/sidebar";
-import { getFolderNames, getFolderFiles } from "@/lib/file";
+import { getFolderNames, getFolderFilenames } from "@/lib/file";
 import { join } from "node:path";
 
 export default async function MDXLayout({
@@ -21,7 +21,7 @@ export default async function MDXLayout({
   const siders = await dirnames.reduce(
     (pre, next) =>
       pre.then(async (value) => {
-        const filenames = await getFolderFiles(
+        const filenames = await getFolderFilenames(
           join(process.cwd(), "src", "mdx", slug[0], next)
         );
 

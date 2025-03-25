@@ -1,17 +1,19 @@
 import { visit } from "unist-util-visit";
 import type { HeadingInterfase } from "@/types/remark-plugins";
+import type * as mdast from "mdast";
 import type { Plugin } from "unified";
 import type { Heading } from "mdast";
 import GithubSlugger from "github-slugger";
+import { valueToEstree } from "estree-util-value-to-estree";
 
 export const remarkAchors: Plugin = () => {
-  return (tree, file) => {
+  return (ast) => {
     const headings: HeadingInterfase[] = [];
     const slugger = new GithubSlugger();
 
     // 访问所有标题节点
     visit(
-      tree,
+      ast,
       "heading",
       (
         node: Omit<Heading, "data"> & { data: { hProperties: { id: string } } }
@@ -32,7 +34,32 @@ export const remarkAchors: Plugin = () => {
       }
     );
 
-    // 将数据挂载到 VFile 上，供后续使用
-    file.data.headings = headings;
+    (ast as mdast.Root).children.unshift({
+      type: "mdxjsEsm",
+      value: "",
+      data: {
+        estree: {
+          type: "Program",
+          sourceType: "module",
+          body: [
+            {
+              type: "ExportNamedDeclaration",
+              specifiers: [],
+              declaration: {
+                type: "VariableDeclaration",
+                kind: "const",
+                declarations: [
+                  {
+                    type: "VariableDeclarator",
+                    id: { type: "Identifier", name: "headings" },
+                    init: valueToEstree(headings, { preserveReferences: true }),
+                  },
+                ],
+              },
+            },
+          ],
+        },
+      },
+    });
   };
 };

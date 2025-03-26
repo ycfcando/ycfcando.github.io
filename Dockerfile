@@ -8,7 +8,7 @@ WORKDIR /image
 COPY package.json package-lock.json* ./
 
 # 安装依赖（使用 ci 命令保持一致性）
-RUN npm ci
+RUN npm ci --registry=https://registry.npm.taobao.org
 
 # 复制项目文件
 COPY . .

@@ -9,3 +9,11 @@
 
 - 启动 Docker: `docker build -t next-app:1.0.0 .`
 - 查看容器：`docker ps -a`
+
+## Linux 云服务器
+- 查看服务器系统: `uname -a`
+- 自动启动docker服务: `sudo systemctl enable docker`
+- 启动docker服务: `sudo systemctl start docker`
+
+## 添加ssh
+- 客户端执行命令：`ssh-keygen -t ed25519 -C <"your_email@example.com">` 尖括号中输入github邮箱

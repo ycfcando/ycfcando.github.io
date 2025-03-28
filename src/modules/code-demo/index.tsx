@@ -15,6 +15,11 @@ const CustomSandpack = () => {
     <SandpackProvider
       template="vanilla"
       theme={theme === "dark" ? "dark" : "light"}
+      options={{
+        bundlerURL: "http://locahost:3000",
+        // 或自定义 bundler 地址
+        // bundlerURL: "https://your-server.com/sandpack-bundler",
+      }}
     >
       <SandpackLayout>
         <SandpackCodeEditor />

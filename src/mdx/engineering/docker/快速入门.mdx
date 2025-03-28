@@ -1,19 +1,118 @@
-## Docker 下载
+## Docker
 
+> 一个快捷，遍历的部署项目工具。
 > [docker 官网](https://www.docker.com/)
 
 - [x] 🍀 **Windows 下载**：Download Docker Desktop -> Download For Window - AMD64
 - [x] 🏁 **Linux 下载**：Download Docker Desktop -> Download For Linux
 
-## Docker 命令
+### **使用**第一步: Dockerfile 设定构建
 
-- 启动 Docker: `docker build -t next-app:1.0.0 .`
-- 查看容器：`docker ps -a`
+> 将项目打包成镜像的脚本文件，docker 会根据 `Dockerfile` 文件来构建镜像
 
-## Linux 云服务器
+> [Dockerfile 文档](https://docs.docker.com/reference/dockerfile/)
+
+**以下是 Demo 实例**：
+
+```dockerfile
+# 创建一个构建并设置基础镜像，并为构建设定名称 builder
+FROM node:22.14-alpine AS builder
+# 为构建设置工作路径 /image
+WORKDIR /image
+# 从执行配置路径中拷贝 package.json 和 package-lock.json 至 /image
+COPY package.json package-lock.json* ./
+# 在 /image 执行安装依赖命令
+RUN npm ci --registry=https://registry.npm.taobao.org
+# 将执行配置路径下文件至 /image
+COPY . .
+# 在 /image 执行打包
+RUN npm run build
+# 创建另一个构建并设置基础镜像，为构建设定名称 runner
+FROM node:22.14-alpine AS runner
+# 为构建设置工作路径 /app
+WORKDIR /app
+# 从上一个构建 builder 拷贝相关文件至 /app
+COPY --from=builder /image/package.json ./package.json
+COPY --from=builder /image/package-lock.json ./package-lock.json
+COPY --from=builder /image/node_modules ./node_modules
+COPY --from=builder /image/.next ./.next
+COPY --from=builder /image/src/mdx ./src/mdx
+# 设置next相关环境变量: 生产、端口3000
+ENV NODE_ENV=production
+ENV PORT=3000
+# 暴露端口
+EXPOSE ${PORT}
+# 设定镜像启动命令
+CMD ["npm", "start"]
+```
+
+1. `FROM <image>[:<tag>] [AS <name>]`: 创建构建并设置基础镜像，`image`可以是名称或 id，`tag`可选为镜像定义的标签
+   `AS <name>`为构建取名
+2. `WORKDIR <path>`: 为构建设定工作路径，即为常用命令设定工作目录，`path`可以是绝对路径或相对路径
+3. `COPY [OPTIONS] <src...> <dest>`: 拷贝源文件至构建路径，`src`为源路径，可以是绝对可以是相对路径，
+   相对路径对应 Dockerfile 执行文件目录。`dest`为构建路径，为`WORKDIR`设定路径；`OPTIONS`可选参数，`--from=builder`
+   表示从上一个构建拷贝文件，此时`src`为上一个构建路径
+4. `RUN <command...>`: 执行 Shell 命令
+5. `ENV <key>=<value> [<key>=<value...>]`: 环境变量，`key`为名称`value`为值，它们可以在构建阶段的大部分命令中使用。
+6. `EXPOSE <port>`: 暴露端口，没有实际用处只是用于文档记录，便于运行时知道映射哪个端口
+7. `CMD ["executable",<param...>]`: 设定镜像启动命令，使用 exec 命令格式即数组形式`[]`
+
+### **使用**第二步：执行构建
+
+> 调用 `docker build` 执行构建指令，在设定 `Dockerfile` 下可以简化构建命令`docker build [OPTIONS] <name> <path>`，
+> `name`是要生成的镜像名称，`path`是 `Dockerfile` 文件路径。
+
+**以下是常用构建指令：**
+
+- 构建带标签镜像: `docker build -t hypoxia-blog:1.0.0 .`
+- 不依赖缓存构建镜像且显示完整日志: `docker build --no-cache --progress=plain -t hypoxia-blog:1.0.0 .`
+
+### **使用**第三部: docker-compose.yml 设定部署
+
+> - `docker-compose.yml` 是部署镜像的脚本文件，docker 会根据这个文件来部署镜像
+> - [docker-compose.yml 文档](https://docs.docker.com/reference/compose-file/)
+
+**以下是 Demo 实例：**
+
+```yml
+# 创建服务
+services:
+  # 服务名
+  next-app:
+    # 包裹服务的容器名
+    container_name: hypoxia-blog
+    # 容器内的镜像
+    image: hypoxia-blog:1.0.0
+    # 容器服务与主机的端口映射
+    ports:
+      - "3000:3000"
+    # 设定环境变量
+    environment:
+      - NODE_ENV=production
+```
+
+1. `services`: 顶部属性用于设定容器服务，即应用服务
+2. `services.<key>`: services 下属性，自定义它是每个服务的名称
+3. `<key>.container_name`: 设定包裹服务的容器名
+4. `image`: 容器内的镜像，可以是 id 可以是名称
+5. `ports`: 主机端和容器的端口映射
+6. `environment`: 设定的环境变量
+
+### **使用**第四部：部署镜像
+
+> 在设定 `docker-composej.yml` 下，调用 `docker-compose` 指令部署镜像（应用）
+
+**以下是常用命令：**
+
+1. 后台部署镜像: `docker-compose up -d`
+
+## Linux 关于 Docker 命令
+
 - 查看服务器系统: `uname -a`
-- 自动启动docker服务: `sudo systemctl enable docker`
-- 启动docker服务: `sudo systemctl start docker`
-
-## 添加ssh
-- 客户端执行命令：`ssh-keygen -t ed25519 -C <"your_email@example.com">` 尖括号中输入github邮箱
+- 启动 docker 服务: `sudo systemctl start docker`
+- 设置 docker 服务自动启动 : `sudo systemctl enable docker`
+- 清空 docker 未使用资源: `docker system prune -a -f`
+- 查看所有容器：`docker ps -a`
+- 如何运行容器: `docker ps`
+- 镜像关联 dockerhub 仓库: `docker tag local-image:tagname new-repo:tagname`
+- 拉取的镜像资源: `docker pull new-repo:tagname`

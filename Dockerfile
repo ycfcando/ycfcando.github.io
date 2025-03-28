@@ -34,7 +34,7 @@ ENV NODE_ENV=production
 ENV PORT=3000
 
 # 暴露端口
-EXPOSE 3000
+EXPOSE ${PORT}
 
 # 启动命令
 CMD ["npm", "start"]

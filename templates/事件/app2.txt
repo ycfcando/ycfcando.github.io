@@ -1,0 +1,13 @@
+import Input from "./Input.js";
+export default function App() {
+  function handleChange(value) {
+    console.log(value);
+  }
+
+  return (
+    <div>
+      <Input onChange={handleChange} />
+    </div>
+  );
+
+}

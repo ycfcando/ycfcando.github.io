@@ -3,6 +3,7 @@ import {
   MDXForBuild,
   MDXContainer,
   MDXAnchorList,
+  MDXHeader,
 } from "@/modules/mdx-server-build";
 import AnchorList from "@/modules/anchor-list";
 
@@ -16,7 +17,7 @@ export default async function Page({
   const { slug } = await params;
   const slugDecode = slug?.map((slugItem) => decodeURIComponent(slugItem));
 
-  const { isMDX, MDXComponent, headings } = await (async () => {
+  const { isMDX, MDXComponent, headings, frontmatter } = await (async () => {
     const currentSlug = slugs.find((slugItem) => {
       const isEvery = slugItem.slug.every((path) => slugDecode.includes(path));
 
@@ -27,7 +28,7 @@ export default async function Page({
         default: MDXComponent,
         frontmatter,
         headings,
-      } = await import(`@/mdx/${decodeURIComponent(slug.join("/"))}.mdx`);
+      } = await import(`../../../mdx/${decodeURIComponent(slug.join("/"))}.mdx`);
       return {
         isMDX: true,
         MDXComponent,
@@ -42,7 +43,9 @@ export default async function Page({
     <div className="grid col-span-5 grid-cols-6 relative">
       {isMDX && (
         <MDXForBuild>
-          <MDXContainer mdxFn={() => <MDXComponent />} />
+          <MDXContainer mdxFn={() => <MDXComponent />}>
+            <MDXHeader frontmatter={frontmatter} />
+          </MDXContainer>
           <MDXAnchorList>{<AnchorList headings={headings} />}</MDXAnchorList>
         </MDXForBuild>
       )}

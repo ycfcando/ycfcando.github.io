@@ -1,0 +1,8 @@
+import Info from "./Info";
+export default function App() {
+  return (
+    <div>
+      <Info male="男" age={18}>{"Hypoxia"}</Info>
+    </div>
+  );
+}

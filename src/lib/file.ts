@@ -11,7 +11,7 @@ export async function getMarkdownFile(paths: string[]) {
   const suffixPaths = paths.map((path, index) =>
     index === paths.length - 1 ? `${path}.mdx` : path
   );
-  const filePath = join(runPath, "src", "mdx", ...suffixPaths);
+  const filePath = join(runPath, "mdx", ...suffixPaths);
   const file = readFileSync(filePath, "utf8");
 
   return file;
@@ -56,7 +56,7 @@ export async function getFolderNames(path: string) {
 }
 
 export async function getAllMDXSlugs() {
-  const enterPath = join(process.cwd(), "src", "mdx");
+  const enterPath = join(process.cwd(), "mdx");
 
   // 获取一级目录
   const files = await readdir(enterPath, { withFileTypes: true });

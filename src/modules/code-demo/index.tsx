@@ -3,23 +3,32 @@
 import {
   SandpackProvider,
   SandpackLayout,
-  SandpackPreview,
   SandpackCodeEditor,
+  SandpackPreview,
 } from "@codesandbox/sandpack-react";
+import type { SandpackProviderProps } from "@codesandbox/sandpack-react";
 import { useTheme } from "next-themes";
 
-const CustomSandpack = () => {
+const CustomSandpack = ({
+  files,
+  options,
+  ...props
+}: SandpackProviderProps) => {
   const { theme } = useTheme();
-
   return (
     <SandpackProvider
-      template="vanilla"
+      template="react"
       theme={theme === "dark" ? "dark" : "light"}
+      files={files}
       options={{
-        bundlerURL: "http://locahost:3000",
-        // 或自定义 bundler 地址
-        // bundlerURL: "https://your-server.com/sandpack-bundler",
+        bundlerURL: "https://sandpack-bundler.codesandbox.io/latest/bundler.js",
+        classes: {
+          "sp-tab-container": "custom-tab-container",
+          "sp-tabs-scrollable-container": "custom-tabs-scrollable-container",
+        },
+        ...options,
       }}
+      {...props}
     >
       <SandpackLayout>
         <SandpackCodeEditor />

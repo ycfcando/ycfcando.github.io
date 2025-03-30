@@ -12,7 +12,7 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const navData = await getFolderNames(join(process.cwd(), "src", "mdx")).then(
+  const navData = await getFolderNames(join(process.cwd(), "mdx")).then(
     (dirnames) =>
       dirnames?.map((dirname) => ({ path: `/${dirname}`, text: dirname }))
   );

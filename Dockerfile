@@ -27,7 +27,7 @@ COPY --from=builder /image/package.json ./package.json
 COPY --from=builder /image/package-lock.json ./package-lock.json
 COPY --from=builder /image/node_modules ./node_modules
 COPY --from=builder /image/.next ./.next
-COPY --from=builder /image/src/mdx ./src/mdx
+COPY --from=builder /image/src/mdx ./mdx
 
 # 设置环境变量
 ENV NODE_ENV=production

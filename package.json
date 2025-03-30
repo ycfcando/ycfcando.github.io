@@ -51,6 +51,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.1.7",
+    "raw-loader": "^4.0.2",
     "sass": "^1.85.1",
     "typescript": "^5"
   }

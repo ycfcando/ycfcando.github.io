@@ -15,14 +15,14 @@ export default async function MDXLayout({
   const { slug } = await params;
   const slugDecodes = slug.map((slugText) => decodeURIComponent(slugText));
   const dirnames = await getFolderNames(
-    join(process.cwd(), "src", "mdx", slug?.[0])
+    join(process.cwd(), "mdx", slug?.[0])
   );
 
   const siders = await dirnames.reduce(
     (pre, next) =>
       pre.then(async (value) => {
         const filenames = await getFolderFilenames(
-          join(process.cwd(), "src", "mdx", slug[0], next)
+          join(process.cwd(), "mdx", slug[0], next)
         );
 
         value.push({

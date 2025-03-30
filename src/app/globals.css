@@ -41,7 +41,7 @@
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
   --nav-foreground: oklch(0.205 0 0 / 0.6);
-  --code-background: oklch(0.97 0 0);
+  --code-background: oklch(0.92 0 0);
   --skeleton-border: oklch(0.94 0 0 / 0.6);
   --icon-theme-filter: none;
 }
@@ -80,7 +80,7 @@
   --sidebar-border: oklch(0.269 0 0);
   --sidebar-ring: oklch(0.439 0 0);
   --nav-foreground: oklch(0.985 0 0 / 0.8);
-  --code-background: oklch(0.27 0.01 0);
+  --code-background: oklch(0.9 0 0 / 0.5);
   --skeleton-border: oklch(0.94 0 0 / 0.1);
   --icon-theme-filter: invert(1) hue-rotate(180deg); /* 反色 + 色相翻转 */
 }
@@ -171,6 +171,14 @@
   font-size: var(--text-sm);
 }
 
+.custom-tab-container {
+  border: none;
+}
+
+.custom-tabs-scrollable-container .custom-tab-container:has(button:focus) {
+  outline: none;
+}
+
 .typography h1,
 h2,
 h3,
@@ -182,7 +190,7 @@ h6 {
 
 @layer components {
   .code-custom:not(pre *) {
-    @apply rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm;
+    @apply rounded bg-code-background px-[0.3rem] py-[0.2rem] text-sm;
     font-family: inherit;
   }
 }

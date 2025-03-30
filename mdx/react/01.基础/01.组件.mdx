@@ -1,0 +1,50 @@
+---
+title: 组件
+authors: Hypoxia
+date: 2025.3.28
+---
+
+import CustomSandpack from "@/modules/code-demo";
+import app1 from "templates/组件/app1.txt";
+import app2 from "templates/组件/app2.txt";
+import button from "templates/组件/button.txt";
+import title from "templates/组件/title.txt";
+
+> - React 构建界面和编写逻辑的主要方式，语法由 JavaScript 和 JSX 构成。
+> - [官方文档](https://zh-hans.react.dev/learn/your-first-component)
+
+## 概念
+
+<CustomSandpack
+  files={{
+    "/App.js": app1,
+    "/Button.js": {
+      code: button,
+      hidden: false,
+    },
+  }}
+/>
+
+1. **ReactElement**: 类似 `<h1>Hello, world!</h1>`，和 html 相似，首字母小写以标签构成
+2. **ReactNode**: 能被 React 渲染的内容，可以是 `ReactElement`、`string`、`number`、`boolean`、`null` 、 `undefined`
+   和它们的数组（组件的实例本质返回的是 ReactNode）
+
+## 使用
+
+<CustomSandpack
+  files={{
+    "/App.js": app2,
+    "/Button.js": {
+      code: button,
+      hidden: false,
+    },
+    "/Title.js": {
+      code: title,
+      hidden: false,
+    },
+  }}
+/>
+
+1. 组件通过函数创建，组件名首字母大写，返回 ReactNode
+2. 组件使用和 html 相同，以标签形式使用。
+3. 组件可以嵌套使用，以开口闭口标签形式嵌套，可接收参数 children 获取嵌套的 ReactNode

@@ -1,0 +1,14 @@
+import Info from "./Info";
+import Button from "./Button";
+import { createContext } from "react";
+export const Context = createContext();
+export default function App() {
+  return (
+  <Context.Provider value="dark">
+    <div>
+      <Info male="男" age={18}>{"Hypoxia"}</Info>
+      <Button>按钮</Button>
+    </div>
+  </Context.Provider>
+  );
+}

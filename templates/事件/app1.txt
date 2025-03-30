@@ -1,0 +1,11 @@
+export default function App() {
+  function handleChange(event) {
+    console.log(event);
+  }
+
+  return (
+    <div>
+      <input type="text" onChange={handleChange} />
+    </div>
+  );
+}

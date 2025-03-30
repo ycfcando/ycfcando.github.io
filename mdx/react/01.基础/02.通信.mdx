@@ -1,0 +1,49 @@
+---
+title: 通信
+authors: Hypoxia
+date: 2025.3.29
+---
+
+import CustomSandpack from "@/modules/code-demo";
+import app1 from "templates/通信/app1.txt";
+import app2 from "templates/通信/app2.txt";
+import info from "templates/通信/info.txt";
+import button from "templates/通信/button.txt";
+
+> React 组件之间的通信方式，主要有 Props 和 Context 两种方式。
+
+### Props
+
+<CustomSandpack
+  files={{
+    "/App.js": app1,
+    "/Info.js": {
+      code: info,
+      hidden: false,
+    },
+  }}
+/>
+
+1. 父组件通过 JSX 属性向子组件传递数据，JSX 属性以小驼峰命名
+2. 还可以通过嵌套向组件传递数据
+3. 组件通过 `props` 对象参数接收数据
+
+### Context
+
+<CustomSandpack
+  files={{
+    "/App.js": app2,
+    "/Info.js": {
+      code: info,
+      hidden: false,
+    },
+    "/Button.js": {
+      code: button,
+      hidden: false,
+    },
+  }}
+/>
+
+1. createContext 创建上下文对象 Context，其 Provider 组件通过 value 向子代组件传递数据
+2. 子代组件向 useContext 传递 Context 获取传递的值
+3. 子代组件获取的值取离得最近的上层 Provider 传递的值

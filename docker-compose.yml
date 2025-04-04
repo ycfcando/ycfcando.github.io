@@ -1,9 +1,7 @@
 services:
   next-app:
     container_name: hypoxia-blog
-    build:
-      context: .
-      dockerfile: Dockerfile
+    images: 
     ports:
       - "3000:3000"
     environment:

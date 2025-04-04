@@ -4,46 +4,72 @@ authors: Hypoxia
 date: 2025.3.29
 ---
 
-import CustomSandpack from "@/modules/code-demo";
-import app1 from "templates/通信/app1.txt";
-import app2 from "templates/通信/app2.txt";
-import info from "templates/通信/info.txt";
-import button from "templates/通信/button.txt";
-
-> React 组件之间的通信方式，主要有 Props 和 Context 两种方式。
+> ReactElement 间的传递数据的方式。
 
 ### Props
 
-<CustomSandpack
-  files={{
-    "/App.js": app1,
-    "/Info.js": {
-      code: info,
-      hidden: false,
-    },
-  }}
-/>
+> 父 ReactElement 向子 ReactElement 的通信方式
 
-1. 父组件通过 JSX 属性向子组件传递数据，JSX 属性以小驼峰命名
-2. 还可以通过嵌套向组件传递数据
-3. 组件通过 `props` 对象参数接收数据
+```tsx
+function Title({ children, color }) {
+  return <h1 style={{ color }}>{children}</h1>;
+}
+
+function App() {
+  return <Title color="#ccc">Hello World</Title>;
+}
+```
+
+1. 通过定义小驼峰命名的 JSX 属性可以向 ReactElement 传递数据
+2. 这些数据被称为 props，html 标签接收它作为 DOM 属性，而组件第一个参数可获取 props 作为数据使用
+3. 嵌套也是 props 传递的方式，html 标签将它作为内容，组件可以通过 `props.children` 获取它
 
 ### Context
 
-<CustomSandpack
-  files={{
-    "/App.js": app2,
-    "/Info.js": {
-      code: info,
-      hidden: false,
-    },
-    "/Button.js": {
-      code: button,
-      hidden: false,
-    },
-  }}
-/>
+> 组件向子代组件传递数据的方式
 
-1. createContext 创建上下文对象 Context，其 Provider 组件通过 value 向子代组件传递数据
-2. 子代组件向 useContext 传递 Context 获取传递的值
-3. 子代组件获取的值取离得最近的上层 Provider 传递的值
+```tsx
+import { createContext, useContext } from "react";
+
+const Context = createContext("dark");
+
+function InfoList({ infoList }) {
+  const color = useContext(Context);
+
+  return (
+    <ul style={{ color }}>
+      {infoList?.map(({ key, text }) => (
+        <li style={{ color }} key={key}>
+          {text}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function Info({ children }) {
+  const color = useContext(Context);
+
+  return (
+    <div>
+      <h1 style={{ color }}>{children}</h1>
+      <InfoList />
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <Context.Provider value="dark">
+      <Info>信息</Info>
+    </Context.Provider>
+  );
+}
+```
+
+1. 通过 `createContext` 创建上下文对象 **Context**，组件通过 **Provider 组件**包裹子代组件，赋值 value 向子代组件传递数据
+2. 子代组件通过向 `useContext` 传参 **Context** 可获取祖先组件传递的数据
+3. 要注意的是，子代组件获取的数据是离其最近的上层 **Provider 组件**传递的值
+4. 假如离子代最近的上层 **Provider 组件**没传递数据，则会使用 `createContext(<value>)` 提供的 value 默认值
+
+### 思考

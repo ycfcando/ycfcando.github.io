@@ -5,46 +5,108 @@ date: 2025.3.28
 ---
 
 import CustomSandpack from "@/modules/code-demo";
-import app1 from "templates/组件/app1.txt";
-import app2 from "templates/组件/app2.txt";
-import button from "templates/组件/button.txt";
-import title from "templates/组件/title.txt";
+import app from "templates/组件/app.txt";
 
-> - React 构建界面和编写逻辑的主要方式，语法由 JavaScript 和 JSX 构成。
-> - [官方文档](https://zh-hans.react.dev/learn/your-first-component)
+> React 构建界面的主要方式，[官方文档](https://zh-hans.react.dev/learn/your-first-component)
 
-## 概念
+### 组件
 
-<CustomSandpack
-  files={{
-    "/App.js": app1,
-    "/Button.js": {
-      code: button,
-      hidden: false,
-    },
-  }}
-/>
+```tsx
+function Title() {
+  return <h1>hello world</h1>;
+}
+```
 
-1. **ReactElement**: 类似 `<h1>Hello, world!</h1>`，和 html 相似，首字母小写以标签构成
-2. **ReactNode**: 能被 React 渲染的内容，可以是 `ReactElement`、`string`、`number`、`boolean`、`null` 、 `undefined`
-   和它们的数组（组件的实例本质返回的是 ReactNode）
+1. `function Title() {}`: 首字母大写的函数
+2. `return <h1>hello world</h1>`: 返回 ReactNode
 
-## 使用
+### ReactNode
 
-<CustomSandpack
-  files={{
-    "/App.js": app2,
-    "/Button.js": {
-      code: button,
-      hidden: false,
-    },
-    "/Title.js": {
-      code: title,
-      hidden: false,
-    },
-  }}
-/>
+> 能够被渲染的数据类型
 
-1. 组件通过函数创建，组件名首字母大写，返回 ReactNode
-2. 组件使用和 html 相同，以标签形式使用。
-3. 组件可以嵌套使用，以开口闭口标签形式嵌套，可接收参数 children 获取嵌套的 ReactNode
+```tsx
+function Title() {
+  return <h1>hello world</h1>;
+}
+
+function App() {
+  return [
+    "hello",
+    1,
+    true,
+    null,
+    undefined,
+    <h1 key="1">Hello, world!</h1>,
+    <Title />,
+  ];
+}
+```
+
+1. `string`、`number`、`boolean`、`null` 和 `undefined` 都是是 **ReactNode**
+2. `<h1>Hello, world!</h1>` 和 `<Title />` 也是 **ReactNode**，它们被单独归类为 ReactElement
+3. **ReactNode** 可以是它们中的单独一个，也可以是它们组成的数组
+
+### ReactElement
+
+> 能在 Javascript 中使用，形似 html 标签的结构被称为 ReactElement
+
+```tsx
+function Title() {
+  return <h1>hello world</h1>;
+}
+
+function App() {
+  return (
+    <div>
+      <h1 id="hello">Hello, world!</h1>
+      <Title />
+      <p>tell me telephone</p>
+      <p>{1234567890}</p>
+    </div>
+  );
+}
+```
+
+1. ReactElement 分两种小写标签 `<h1>Hello, world!</h1>` 叫 html 标签，大写标签 `<Title />` 叫组件调用
+2. html 标签特性和原生 html 标签几乎相同，组件调用除了能实现 html 标签特性外，还带有组件特性
+3. ReactElement 可以嵌套 ReactNode，因此 ReactElement 是 ReactNode 组成的树状结构
+4. ReactElement 可以嵌套任意表达式，除字符串和 ReactElement 外，其他需要用 `{}` 包裹
+
+### 思考
+
+1. 下面例子组件能否返回?
+
+   ```tsx
+   function App {
+     return (
+       <li>hello1</li>
+       <li>hello2</li>
+       <li>hello3</li>
+     )
+   }
+   ```
+
+   不能，返回不是 ReactNode。
+
+2. 下面例子组件能否返回?
+
+   ```tsx
+   function App {
+     return <div>{{name: "Hypoxia", age: 27}}</div>
+   }
+   ```
+
+   不能，ReactElement 只能嵌套 ReactNode，所以不是 ReactNode。
+
+3. `boolean`、`null` 和 `undefined` 在 React 中会展示成什么
+
+   会展示成空
+
+4. 标签中能否调用函数
+   ```tsx
+   function App() {
+     return <div>{(() => "hello")()}</div>;
+   }
+   ```
+   
+   可以，ReactElement 可以嵌套表达式

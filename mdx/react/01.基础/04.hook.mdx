@@ -1,0 +1,106 @@
+---
+title: Hook
+authors: Hypoxia
+date: 2025.3.31
+---
+
+import CustomSandpack from "@/modules/code-demo";
+import app1 from "templates/hook/app1.txt";
+import button from "templates/hook/button.txt";
+
+> 扩展组件能力的编程范式
+
+### useState
+
+> 提供组件持久化数据的能力
+
+```tsx
+function App() {
+  const [value, setValue] = useState("");
+
+  function onChange(event) {
+    setValue(event.target.value);
+  }
+
+  return (
+    <>
+      <input type="text" onChange={onChange} />
+      <div>{value}</div>
+    </>
+  );
+}
+```
+
+1. `useState(<init>)` 接收一个参数，作为数据的初始值
+2. `[<state>, <setState>]` 返回两个参数，状态 `<state>` 和更新方法 `<setState>`
+3. `<state>` 状态是组件持久化数据的统称，它跟随组件渲染更新
+4. `setState(<value> | <fn>)` 更新方法接收一个参数，可以是 `<value>` 状态更新的值，或者是`<fn>` 回调函数
+5. `(<pre>) => <value>` 是 `<fn>` 回调的形式，`<pre>` 是上一次状态的值，`<value>` 是下一次状态的值
+
+### useEffect
+
+> 提供渲染后触发函数的能力（渲染后事件）
+
+```tsx
+function Demo({ something }) {
+  useEffect(() => {
+    console.log("Hello World1");
+
+    return () => {
+      console.log("bye1");
+    };
+  });
+
+  useEffect(() => {
+    console.log("Hello World2");
+
+    return () => {
+      console.log("bye2");
+    };
+  }, []);
+
+  useEffect(() => {
+    console.log("Hello World3");
+
+    return () => {
+      console.log("bye3");
+    };
+  }, [something]);
+
+  return <div>Hello World</div>;
+}
+```
+
+1. `useState(<cb>, [<array>])` 接收两个参数，回调函数 `<cb>` 和 可选参数 `<array>` 数组
+2. `<cb>` 回调会在渲染后执行，回调形式如下 `() => <fn>`，`<fn>` 是函数它会在 `<cb>` 前执行
+3. `<array>` 进一步约束 `<cb>` 执行条件，数组里可以是 `state`、 `props` 或其他任意值
+4. `<array>` 无时 `<cb>` 每次渲染后执行，有时 `<cb>` 在 `<array>` 内的任意值发生变化的渲染后执行
+
+### 自定义 hook
+
+```tsx
+function useCustom() {
+  const text = "hello world";
+
+  function console() {
+    console.log(text);
+  }
+
+  return [text, console];
+}
+
+function App() {
+  const [text, console] = useCustom();
+
+  return <div>{text}</div>;
+}
+```
+
+1. hook 规定以 use 开头，在组件或 hook 最外层调用。
+2. hook 规定不能嵌套在条件语句内
+
+### 思考
+
+1. 为什么 hook 只能在最外层调用，不能嵌套条件语句？它本质是什么？  
+   因为 hook 中的 state 和 effect 依赖函数执行顺序，若在最外层调用或嵌套进条件语句中会扰乱顺序。
+   hook 的本质就是函数，只不过它的特性强制它必须在特定条件使用。

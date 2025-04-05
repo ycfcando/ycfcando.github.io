@@ -1,0 +1,59 @@
+---
+title: lazy
+authors: Hypoxia
+date: 2025.4.04
+---
+
+> 动态加载组件，优化渲染性能
+
+### 基础用法
+
+```tsx
+import { lazy, Suspense } from "react";
+
+const Demo = lazy(() => import("./Demo.js"));
+
+function App() {
+  const [visible, setVisible] = useState(false);
+
+  return (
+    <>
+      <button onClick={() => setVisible(!visible)}>Toggle</button>
+      {visible && <Demo />}
+    </>
+  );
+}
+```
+
+1. `lazy(<load>)` **load** 是返回 **Promise** 函数，且 **Promise** 结果是含有 `default` 属性值为 **React 组件** 的对象
+2. `const Component = lazy(<load>)` lazy 函数返回一个新的组件，组件被渲染时自动调用 `load` 函数，解析并渲染指定组件
+3. `import()` 返回值符合 **load** 返回，通常配合 lazy 使用，以实现组件动态加载。
+4. `load` 解析时渲染处于等待状态，直到组件解析渲染完成
+
+### 配合 Suspense
+
+> `load` 解析通常会较慢，配合 `Suspense` 组件可将渲染挂起，执行备选渲染，直到 `load` 解析完成
+
+```tsx
+import { lazy, Suspense } from "react";
+
+const Demo = lazy(() => import("./Demo.js"));
+
+function App() {
+  const [visible, setVisible] = useState(false);
+
+  return (
+    <>
+      <button onClick={() => setVisible(!visible)}>Toggle</button>
+      {visible && (
+        <Suspense fallback={<div>Loading...</div>}>
+          <Demo />
+        </Suspense>
+      )}
+    </>
+  );
+}
+```
+
+1. `<Suspense>` 组件包裹 `lazy` 组件，表示该组件的渲染可以被挂起
+2. `<Suspense>` 组件接收 `fallback` 属性，表示在组件解析期间渲染的内容

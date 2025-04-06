@@ -34,7 +34,11 @@ export default function AnchorList({
       {headings.map((heading) => (
         <li key={heading.id}>
           <a href={`#${heading.id}`}>
-            <Toggle variant="blod" pressed={activeHeading === heading.id}>
+            <Toggle
+              variant="blod"
+              pressed={activeHeading === heading.id}
+              onClick={() => setActiveHeading(heading.id)}
+            >
               {heading.text}
             </Toggle>
           </a>

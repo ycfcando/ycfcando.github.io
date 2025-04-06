@@ -1,22 +1,17 @@
-"use server";
-
-import { join } from "node:path";
 import { GeistSans } from "geist/font/sans";
 import "./globals.css";
 import Header from "@/modules/header";
 import { ThemeProvider } from "@/components/provider/theme-provider";
-import { getFolderNames } from "@/lib/file";
+import { RouteProvider } from "@/components/provider/route-provider";
+import { getDocumentRoutesData } from "@/lib/file";
 
 export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const navData = await getFolderNames(join(process.cwd(), "mdx")).then(
-    (dirnames) =>
-      dirnames?.map((dirname) => ({ path: `/${dirname}`, text: dirname }))
-  );
-
+  const routesData = await getDocumentRoutesData();
+  
   return (
     <html lang="en" suppressHydrationWarning className={GeistSans.className}>
       <body className="m-0">
@@ -26,10 +21,12 @@ export default async function DashboardLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <Header navData={navData} />
-          <main className="container mx-auto mt-[48px] relative grid grid-cols-6 gap-1">
-            {children}
-          </main>
+          <RouteProvider data={routesData}>
+            <Header />
+            <main className="container mx-auto mt-[48px] relative grid grid-cols-6 gap-1">
+              {children}
+            </main>
+          </RouteProvider>
         </ThemeProvider>
       </body>
     </html>

@@ -1,4 +1,3 @@
-import { getAllMDXSlugs } from "@/lib/file";
 import {
   MDXForBuild,
   MDXContainer,
@@ -6,36 +5,38 @@ import {
   MDXHeader,
 } from "@/modules/mdx-server-build";
 import AnchorList from "@/modules/anchor-list";
-
-const slugs = await getAllMDXSlugs();
+import { getDocumentRoutesData } from "@/lib/file";
 
 export default async function Page({
   params,
 }: {
   params: Promise<{ slug: string[] }>;
 }) {
+  const routesData = await getDocumentRoutesData();
   const { slug } = await params;
   const slugDecode = slug?.map((slugItem) => decodeURIComponent(slugItem));
 
   const { isMDX, MDXComponent, headings, frontmatter } = await (async () => {
-    const currentSlug = slugs.find((slugItem) => {
-      const isEvery = slugItem.slug.every((path) => slugDecode.includes(path));
-
-      return slugDecode.length === slugItem.slug.length && isEvery;
+    const route = routesData.find((item) => {
+      const isEvery = item.slug?.every((value) => slugDecode.includes(value));
+      return item.slug && slugDecode.length === item.slug.length && isEvery;
     });
-    if (currentSlug) {
+
+    if (route && route.isMDX) {
       const {
         default: MDXComponent,
         frontmatter,
         headings,
-      } = await import(`../../../mdx/${decodeURIComponent(slug.join("/"))}.mdx`);
+      } = await import(`../../../mdx${route.relativePath}.mdx`);
+
       return {
-        isMDX: true,
+        isMDX: route.isMDX,
         MDXComponent,
         frontmatter,
         headings,
       };
     }
+
     return { isMDX: false, MDXComponent: null };
   })();
 
@@ -54,5 +55,12 @@ export default async function Page({
 }
 
 export async function generateStaticParams() {
+  const routesData = await getDocumentRoutesData();
+  const slugs = routesData
+    .filter(({ isMDX }) => isMDX)
+    .map(({ slug }) => ({
+      slug,
+    }));
+
   return slugs;
 }

@@ -1,5 +1,7 @@
 "use client";
 
+import { useContext } from "react";
+import { RouteContext } from "@/components/provider/route-provider";
 import {
   NavContainer,
   NavHome,
@@ -14,11 +16,9 @@ import { ThemeSwitch } from "@/modules/theme-switch";
 import { usePathname } from "next/navigation";
 import icon from "@/static/icon.png";
 
-export default function Header({
-  navData,
-}: {
-  navData: { path: string; text: string }[];
-}) {
+export default function Header() {
+  const routesData = useContext(RouteContext);
+  const navRoutes = routesData?.filter((route) => route.level === 1);
   const pathname = usePathname();
   const currentNavPath = pathname?.match(/^\/[a-zA-Z]+/)?.[0];
 
@@ -27,11 +27,17 @@ export default function Header({
       <NavContainer>
         <NavHome icon={icon}>Hypoxia</NavHome>
         <NavContent>
-          {navData?.map(({ path, text }) => (
-            <NavLink key={path} href={path} pressed={path === currentNavPath}>
-              {text}
-            </NavLink>
-          ))}
+          {navRoutes?.map(({ route, path, name }) => {
+            return (
+              <NavLink
+                key={path}
+                href={route}
+                pressed={route === currentNavPath}
+              >
+                {name}
+              </NavLink>
+            );
+          })}
         </NavContent>
         <NavRightContainer>
           <Input

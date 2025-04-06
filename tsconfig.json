@@ -34,7 +34,10 @@
       ],
       "templates/*": [
         "./templates/*"
-      ]
+      ],
+      "mdx/*": [
+        "./mdx/*"
+      ],
     }
   },
   "include": [

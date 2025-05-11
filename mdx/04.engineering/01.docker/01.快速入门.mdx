@@ -6,13 +6,13 @@
 - [x] 🍀 **Windows 下载**：Download Docker Desktop -> Download For Window - AMD64
 - [x] 🏁 **Linux 下载**：Download Docker Desktop -> Download For Linux
 
-### **使用**第一步: Dockerfile 设定构建
+### **使用**第一步: 配置 Dockerfile 文件
 
-> 将项目打包成镜像的脚本文件，docker 会根据 `Dockerfile` 文件来构建镜像
+> docker 会根据 Dockerfile 文件将项目打包成镜像文件，
 
-> [Dockerfile 文档](https://docs.docker.com/reference/dockerfile/)
+> [配置文档](https://docs.docker.com/reference/dockerfile/)
 
-**以下是 Demo 实例**：
+**举例**：
 
 ```dockerfile
 # 创建一个构建并设置基础镜像，并为构建设定名称 builder
@@ -116,6 +116,6 @@ services:
 - 如何运行容器: `docker ps`
 - 镜像关联 dockerhub 仓库: `docker tag local-image:tagname new-repo:tagname`
 - 拉取的镜像资源: `docker pull new-repo:tagname`
-- 停止docker容器: `docker stop <container id>`
+- 停止 docker 容器: `docker stop <container id>`
 - 列出所有镜像: `docker images`
-- 删除docker容器: `docker rm <container id>`
+- 删除 docker 容器: `docker rm <container id>`

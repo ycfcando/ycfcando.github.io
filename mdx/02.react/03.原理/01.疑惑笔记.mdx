@@ -1,0 +1,165 @@
+### alternate 是怎么获取到的
+
+react 分别有两棵 fiber 树，currentRoot 和 processRoot，而 fiber 是自顶向下更新的，开始更新时 processRoot 手动 alternate 赋值为 currentRoot
+因为自顶向下，之后的子 fiber 都可以从父 fiber 那拿到 alternate
+
+### 如何获取新的 fiber
+
+组件 React 运行的根，处理是会调用组件获取新的 fiber，放进 processRoot 的 props.chidlren 中
+
+1. react 如何做到通过创建组件和元素就能渲染视图的？
+2. react 如何做到通过在组件中处理交互逻辑的？
+3. react 如何做到改变组件内部状态就能同步视图的？
+4. 为什么 react 渲染性能要比原生的好？
+5. react 并行渲染是什么，它的原理是什么？
+6. useEffect 是怎么实现的？
+
+### react 如何做到通过创建组件和元素就能渲染视图的？
+
+#### 创建 reactDOMRoot 对象
+
+> 调用：createRoot->ReactDOMRoot
+
+```js
+const reactDOMRoot = {
+  _internalRoot: internalRoot, // 容器对象 fiberRoot
+  render: fn, // 挂载渲染方法
+  unmount: fn, // 卸载方法
+};
+```
+
+#### 创建 fiberRoot 对象
+
+> 调用：createContainer->createFiberRoot->FiberRootNode
+
+```js
+const fiberRoot = {
+  containerInfo: dom, // dom 节点
+  current: hostRootFiber, // fiber 根节点
+  ...,
+};
+```
+
+#### 创建 hostRootFiber 对象
+
+> 调用：createHostRootFiber->createFiber->createFiberImplClass->FiberNode
+
+```js
+const hostRootFiber = {
+  type, // fiber 节点类型
+  key, // 唯一键
+  stateNode, // 容器对象 fiberRoot
+  ...,
+};
+```
+
+#### 将 jsx 转换为 reactElement 对象树
+
+> 调用：jsxDev->jsxDevImpl->ReactElement
+
+reactElement 结构
+
+```js
+const reactElement = {
+  $$typeof: REACT_ELEMENT_TYPE, // react 元素对象标识
+  type, // react 元素类型
+  key, // react 元素 key
+  props, // react 元素 props
+};
+```
+
+#### reactElement 转化成 fiber
+
+> 调用：reconcileChildren->reconcileChildFibersImpl->...->FiberNode
+
+1. 调用 type 中的函数生成 reactElement，将其存储在
+
+```js
+const fiber = {
+  type, // fiber 节点类型
+  child, // 第一个子 fiber
+  sibling, // 右边最近兄弟 fiber
+  return, // 父 fiber
+  pendingProps, // 等待中的 props
+};
+```
+
+#### fiber 转化成 DOM
+
+> 调用：completeUnitOfWork->runWithFiberInDEV->completeWork
+
+```js
+const fiber = {
+  ...,
+  stateNode, // dom 节点
+};
+```
+
+1. dom 节点包含子节点
+
+#### fiber 如何渲染视图的
+
+> 调用：performWorkOnRoot->finishConcurrentRender->commitRootWhenReady->commitRoot->commitRootImpl->commitMutationEffects->commitMutationEffectsOnFiber->recursivelyTraverseMutationEffects->commitMutationEffectsOnFiber->commitReconciliationEffects->commitHostPlacement->runWithFiberInDEV->commitPlacement->insertOrAppendPlacementNodeIntoContainer->appendChildToContainer
+
+```js
+const fiber = {
+  ...,
+  tag, // tag 标签类型
+  stateNode, // dom 节点
+};
+```
+
+1. 将距离 hostRootFiber 最近的，标签类型等于 5 的后代节点即内置标签，中的 stateNode 插入容器节点，完成渲染。
+
+### react 如何处理标签属性？
+
+> 调用路径：finalizeInitialChildren->setInitialProperties->setProp->setValueForAttribute
+
+1. 转化属性名
+2. 处理属性值
+3. 过滤事件属性
+
+### react 如何处理事件？
+
+1. 容器挂载事件监听器，不同事件有不同处理方式
+   > listenToAllSupportedEvents
+2. 触发事件时生成事件监听队列
+   ```js
+   const listeners = [
+     {
+       listener, // 事件函数
+       instance, // 对应 fiber
+       currentTarget, // 对应 DOM
+     },
+   ];
+   ```
+3. 生成事件任务队列
+   ```js
+   const dispatchQueue = [
+     {
+       event, // 事件对象
+       listeners, // 事件监听队列
+     },
+   ];
+   ```
+4. executeDispatch 执行任务队列
+
+### react 如何处理更新？
+
+1. useState 调用了 react 内部方法 `mountActionState` 返回对应值和生成 queue 更新任务
+2. setState 调用了 react 内部方法 `dispatchSetState` 生成 update 对象，触发重新渲染
+3. `dispatchSetState` 触发 `enqueueUpdate` 将更新动作推入 concurrentQueues 更新队列
+4. `scheduleUpdateOnFiber` 触发一次更新，更新推入微任务队列，同步任务结束后调用
+5. processRootScheduleInMicrotask 执行渲染任务，将更新操作存入 memoizedUpdaters
+6. beginWork 执行 fiber 渲染，从 memoizedUpdaters 中获取更新 fiber 根节点
+
+疑问：
+
+1. `dispatchSetState` 有三个参数，但通过 setState 只传了一个参数，另两个参数怎么来的呢？
+   fiber：当前 fiber 对象
+   queue：更新队列
+   useState 渲染阶段会进行处理 `dispatchSetState` 接收了三个参数
+
+### react 如何优化渲染？
+
+### react 如何处理优先级？

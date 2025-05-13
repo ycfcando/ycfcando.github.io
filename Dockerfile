@@ -5,10 +5,10 @@ FROM node:22.14-alpine AS builder
 WORKDIR /image
 
 # 优先复制包管理文件以利用 Docker 缓存
-COPY package.json package-lock.json* ./
+COPY package.json package-lock.json* .npmrc ./
 
 # 安装依赖（使用 ci 命令保持一致性）
-RUN npm ci --registry=https://registry.npm.taobao.org
+RUN npm ci
 
 # 复制项目文件
 COPY . .

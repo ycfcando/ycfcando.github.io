@@ -46,39 +46,54 @@ EXPOSE ${PORT}
 CMD ["npm", "start"]
 ```
 
-1. `FROM <image>[:<tag>] [AS <name>]`: 创建构建并设置基础镜像，`image`可以是名称或 id，`tag`可选为镜像定义的标签
+#### 小技巧 1: 用使用 .dockerignore 文件设定执行 COPY 时要忽视的文件或目录
+
+1. 创建 .dockerignore 文件
+2. 设定要忽视的文件，举例：
+
+```.dockerignore
+node_modules
+.gitignore
+.git
+Dockerfile
+.dockerignore
+docker-compose.yml
+```
+
+3. `FROM <image>[:<tag>] [AS <name>]`: 创建构建并设置基础镜像，`image`可以是名称或 id，`tag`可选为镜像定义的标签
    `AS <name>`为构建取名
-2. `WORKDIR <path>`: 为构建设定工作路径，即为常用命令设定工作目录，`path`可以是绝对路径或相对路径
-3. `COPY [OPTIONS] <src...> <dest>`: 拷贝源文件至构建路径，`src`为源路径，可以是绝对可以是相对路径，
+4. `WORKDIR <path>`: 为构建设定工作路径，即为常用命令设定工作目录，`path`可以是绝对路径或相对路径
+5. `COPY [OPTIONS] <src...> <dest>`: 拷贝源文件至构建路径，`src`为源路径，可以是绝对可以是相对路径，
    相对路径对应 Dockerfile 执行文件目录。`dest`为构建路径，为`WORKDIR`设定路径；`OPTIONS`可选参数，`--from=builder`
    表示从上一个构建拷贝文件，此时`src`为上一个构建路径
-4. `RUN <command...>`: 执行 Shell 命令
-5. `ENV <key>=<value> [<key>=<value...>]`: 环境变量，`key`为名称`value`为值，它们可以在构建阶段的大部分命令中使用。
-6. `EXPOSE <port>`: 暴露端口，没有实际用处只是用于文档记录，便于运行时知道映射哪个端口
-7. `CMD ["executable",<param...>]`: 设定镜像启动命令，使用 exec 命令格式即数组形式`[]`
+6. `RUN <command...>`: 执行 Shell 命令
+7. `ENV <key>=<value> [<key>=<value...>]`: 环境变量，`key`为名称`value`为值，它们可以在构建阶段的大部分命令中使用。
+8. `EXPOSE <port>`: 暴露端口，没有实际用处只是用于文档记录，便于运行时知道映射哪个端口
+9. `CMD ["executable",<param...>]`: 设定镜像启动命令，使用 exec 命令格式即数组形式`[]`
 
-### **使用**第二步：执行构建
+### **使用**第二步：构建镜像
 
-> 调用 `docker build` 执行构建指令，在设定 `Dockerfile` 下可以简化构建命令`docker build [OPTIONS] <name> <path>`，
-> `name`是要生成的镜像名称，`path`是 `Dockerfile` 文件路径。
+1. 执行 `docker build [OPTIONS] <name> <path>` 命令构建镜像
+   1. name: 镜像名称
+   2. path: Dockerfile 文件路径
 
-**以下是常用构建指令：**
+**举例**
 
 - 构建带标签镜像: `docker build -t hypoxia-blog:1.0.0 .`
-- 不依赖缓存构建镜像且显示完整日志: `docker build --no-cache --progress=plain -t hypoxia-blog:1.0.0 .`
+- 不依赖缓存且显示完整日志构建镜像: `docker build --no-cache --progress=plain -t hypoxia-blog:1.0.0 .`
 
-### **使用**第三部: docker-compose.yml 设定部署
+### **使用**第三部: 设定 docker-compose.yml 文件
 
-> - `docker-compose.yml` 是部署镜像的脚本文件，docker 会根据这个文件来部署镜像
-> - [docker-compose.yml 文档](https://docs.docker.com/reference/compose-file/)
+> - docker 根据 docker-compose.yml 文件将镜像部署成服务
+> - [配置文档](https://docs.docker.com/reference/compose-file/)
 
-**以下是 Demo 实例：**
+**举例**
 
 ```yml
 # 创建服务
 services:
   # 服务名
-  next-app:
+  hypoxia-blog:
     # 包裹服务的容器名
     container_name: hypoxia-blog
     # 容器内的镜像
@@ -98,11 +113,9 @@ services:
 5. `ports`: 主机端和容器的端口映射
 6. `environment`: 设定的环境变量
 
-### **使用**第四部：部署镜像
+### **使用**第四部：部署服务
 
-> 在设定 `docker-composej.yml` 下，调用 `docker-compose` 指令部署镜像（应用）
-
-**以下是常用命令：**
+**举例**
 
 1. 后台部署镜像: `docker-compose up -d`
 
@@ -119,3 +132,4 @@ services:
 - 停止 docker 容器: `docker stop <container id>`
 - 列出所有镜像: `docker images`
 - 删除 docker 容器: `docker rm <container id>`
+- 删除 image: `docker rmi [<imageId>|<imageName>]`

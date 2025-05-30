@@ -17,7 +17,11 @@ export function NavHome({
 }) {
   return (
     <Link className="flex items-center gap-2 shrink-0" href="/">
-      <Image className="h-6 w-6 text-inherit filter-(--icon-theme-filter)" src={icon} alt="icon" />
+      <Image
+        className="h-6 w-6 rounded-full"
+        src={icon}
+        alt="icon"
+      />
       <span className="font-bold">{children}</span>
     </Link>
   );
@@ -42,7 +46,7 @@ export function NavLink({
 }
 
 export function NavContent({ children }: { children: React.ReactNode }) {
-  return <nav className="flex gap-2">{children}</nav>;
+  return <nav className="flex gap-6 shrink-0">{children}</nav>;
 }
 
 export function NavRightContainer({ children }: { children: React.ReactNode }) {

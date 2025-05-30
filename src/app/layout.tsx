@@ -1,32 +1,41 @@
-import { GeistSans } from "geist/font/sans";
 import "./globals.css";
 import Header from "@/modules/header";
 import { ThemeProvider } from "@/components/provider/theme-provider";
-import { RouteProvider } from "@/components/provider/route-provider";
-import { getDocumentRoutesData } from "@/lib/file";
+import { MenuProvider } from "@/components/provider/route-provider";
+import localFont from "next/font/local";
+import { cn } from "@/lib/utils";
+import { getMenus } from "@/lib/server/menus";
+
+const myFont = localFont({
+  src: "../../public/fonts/font.woff2",
+});
 
 export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const routesData = await getDocumentRoutesData();
-  
+  const menus = await getMenus();
+
   return (
-    <html lang="en" suppressHydrationWarning className={GeistSans.className}>
-      <body className="m-0">
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={cn("h-screen", myFont.className)}
+    >
+      <body className="h-full overflow-hidden relative m-0 bg-[url(./bg.webp)]">
         <ThemeProvider
           attribute="class"
           defaultTheme="light"
           enableSystem
           disableTransitionOnChange
         >
-          <RouteProvider data={routesData}>
+          <MenuProvider data={menus}>
             <Header />
-            <main className="container mx-auto mt-[48px] relative grid grid-cols-6 gap-1">
+            <main className="container mx-auto h-[calc(100%-48px)]">
               {children}
             </main>
-          </RouteProvider>
+          </MenuProvider>
         </ThemeProvider>
       </body>
     </html>

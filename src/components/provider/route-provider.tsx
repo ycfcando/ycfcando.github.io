@@ -1,13 +1,13 @@
 "use client";
 
 import { createContext, PropsWithChildren } from "react";
-import { DocumentRoutesData } from "@/types/mdx";
+import { IMenu } from "@/types/mdx";
 
-export const RouteContext = createContext<DocumentRoutesData[]>([]);
+export const RouteContext = createContext<Array<IMenu>>([]);
 
-export function RouteProvider({
+export function MenuProvider({
   children,
   data,
-}: PropsWithChildren<{ data: DocumentRoutesData[] }>) {
+}: PropsWithChildren<{ data: Array<IMenu> }>) {
   return <RouteContext value={data}>{children}</RouteContext>;
 }

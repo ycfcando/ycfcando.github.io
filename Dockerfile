@@ -5,7 +5,7 @@ FROM node:22.14-alpine AS builder
 WORKDIR /image
 
 # 优先复制包管理文件以利用 Docker 缓存
-COPY package.json package-lock.json* .npmrc ./
+COPY package.json package-lock.json* ./
 
 # 安装依赖（使用 ci 命令保持一致性）
 RUN npm ci
@@ -27,7 +27,6 @@ COPY --from=builder /image/package.json ./package.json
 COPY --from=builder /image/package-lock.json ./package-lock.json
 COPY --from=builder /image/node_modules ./node_modules
 COPY --from=builder /image/.next ./.next
-COPY --from=builder /image/mdx ./mdx
 
 # 设置环境变量
 ENV NODE_ENV=production

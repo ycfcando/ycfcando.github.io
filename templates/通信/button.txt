@@ -1,6 +1,0 @@
-import { Context } from "/App.js";
-import { useContext } from "react";
-export default ({ children }) => {
-  const theme = useContext(Context);
-  return <button style={{backgroundColor: theme === "dark" ? "#000" : "#fff", color: theme === "dark" ? "#fff" : "#000"}}>{children}</button>;
-};

@@ -1,7 +1,0 @@
-export default ({male, age, children}) => {
-  return <>
-    <h1>姓名：{children}</h1>
-    <p>性别：{male}</p>
-    <p>年龄：{age}</p>
-  </>;
-};

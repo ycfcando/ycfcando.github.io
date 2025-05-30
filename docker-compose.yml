@@ -1,6 +1,6 @@
 services:
   hypoxia-blog:
-    image: sha256:b2c9c4f735bb2ad2bb7570f6fb0e3fa1b59066e7def0dac25738fe981038eeb5
+    image: sha256:34c19c27d19856d846243b8405e4d0c1c2407226bd4c6bd58d00d5dfd38ff14d
     expose:
       - "3000"
     environment:

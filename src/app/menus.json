@@ -1,0 +1,96 @@
+[
+  {
+    "name": "笔记",
+    "path": "/note",
+    "children": [
+      {
+        "name": "React",
+        "path": "/note/react",
+        "children": [
+          {
+            "name": "基础",
+            "path": "/note/react/基础",
+            "children": [
+              {
+                "name": "组件",
+                "path": "/note/react/基础/组件"
+              },
+              {
+                "name": "通信",
+                "path": "/note/react/基础/通信"
+              },
+              {
+                "name": "事件",
+                "path": "/note/react/基础/事件"
+              },
+              {
+                "name": "hook",
+                "path": "/note/react/基础/hook"
+              }
+            ]
+          },
+          {
+            "name": "进阶",
+            "path": "/note/react/进阶",
+            "children": [
+              {
+                "name": "lazy",
+                "path": "/note/react/进阶/lazy"
+              },
+              {
+                "name": "useTransition",
+                "path": "/note/react/进阶/useTransition"
+              },
+              {
+                "name": "use",
+                "path": "/note/react/进阶/use"
+              }
+            ]
+          },
+          {
+            "name": "原理",
+            "path": "/note/react/原理",
+            "children": [
+              {
+                "name": "疑惑笔记",
+                "path": "/note/react/原理/疑惑笔记"
+              },
+              {
+                "name": "React原理",
+                "path": "/note/react/原理/React原理"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Engineering",
+        "path": "/note/engineering",
+        "children": [
+          {
+            "name": "Docker",
+            "path": "/note/engineering/docker",
+            "children": [
+              {
+                "name": "快速入门",
+                "path": "/note/engineering/docker/快速入门"
+              }
+            ]
+          },
+          {
+            "name": "调试",
+            "path": "/note/engineering/调试"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "产品",
+    "path": "/product"
+  },
+  {
+    "name": "后台",
+    "path": "/background"
+  }
+]

@@ -14,25 +14,23 @@ import { Github } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { ThemeSwitch } from "@/modules/theme-switch";
 import { usePathname } from "next/navigation";
-import icon from "@/static/icon.png";
+import archor from "public/archor.webp";
 
 export default function Header() {
-  const routesData = useContext(RouteContext);
-  const navRoutes = routesData?.filter((route) => route.level === 1);
-  const pathname = usePathname();
-  const currentNavPath = pathname?.match(/^\/[a-zA-Z]+/)?.[0];
+  const menus = useContext(RouteContext);
+  const pagePath = decodeURIComponent(usePathname());
 
   return (
-    <header className="flex justify-center w-full h-[48px] shadow-[inset_0_-1px_0_0_var(--skeleton-border)] backdrop-blur-md fixed top-0 z-[1000] transition-transform duration-300">
+    <header className="flex w-full h-[48px] sticky justify-center shadow-[inset_0_-1px_0_0_var(--skeleton-border)] backdrop-blur-md top-0 z-[1000] transition-transform duration-300 bg-(--background)/95 shrink-0">
       <NavContainer>
-        <NavHome icon={icon}>Hypoxia</NavHome>
+        <NavHome icon={archor}>Hypoxia</NavHome>
         <NavContent>
-          {navRoutes?.map(({ route, path, name }) => {
+          {menus?.map(({ path, name }) => {
             return (
               <NavLink
                 key={path}
-                href={route}
-                pressed={route === currentNavPath}
+                href={path}
+                pressed={new RegExp(`^${path}`).test(pagePath)}
               >
                 {name}
               </NavLink>

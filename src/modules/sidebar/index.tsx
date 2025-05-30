@@ -1,17 +1,13 @@
 "use client";
 
-import { useState, useCallback, useContext, useMemo } from "react";
+import { useState, useCallback, useMemo, useContext } from "react";
 import { usePathname } from "next/navigation";
-import { RouteContext } from "@/components/provider/route-provider";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
 import Link from "next/link";
 import type { LinkProps } from "next/link";
 import { Toggle } from "@/components/ui/toggle";
+import { Collapsible } from "@/components/ui/collapsible";
+import { ChevronUp } from "lucide-react";
+import { RouteContext } from "@/components/provider/route-provider";
 
 export interface ParentSiderInterface {
   text: string;
@@ -24,75 +20,79 @@ interface ChildSiderInterface {
   path: LinkProps["href"];
 }
 
-export function Sidebar({ slug }: { slug: string[] }) {
-  const pathname = decodeURIComponent(usePathname());
-  const rootRoute = pathname?.match(/^\/[\w\.]+/)?.[0] ?? "undefined";
-  const routesData = useContext(RouteContext);
-  const siders = useMemo(() => {
-    const siderRoutes = routesData.filter(
-      (data) => data.level === 2 && data.route.includes(rootRoute)
-    );
-
-    return siderRoutes.map(({ name, route, level, ...other }) => {
-      const children = routesData.filter(
-        (data) => data.level === 3 && data.route.includes(route)
-      );
-
-      return {
-        name,
-        route,
-        level,
-        ...other,
-        children,
-      };
-    });
-  }, [routesData, rootRoute]);
-
-  const [collapsibleParentSider, setCollapsibleParentSider] = useState(
-    slug?.[1]
+export function Sidebar() {
+  const menus = useContext(RouteContext);
+  const pagePath = decodeURIComponent(usePathname());
+  const siderMenus = useMemo(
+    () =>
+      menus
+        .find(({ path }) => new RegExp(`^${path}(?=/?)`).test(pagePath))
+        ?.children?.find(({ path }) =>
+          new RegExp(`^${path}(?=/?)`).test(pagePath)
+        ),
+    [menus, pagePath]
   );
-  console.log(pathname);
-  const collapsibleCaller = useCallback((parentSider: string) => {
-    setCollapsibleParentSider(parentSider);
-  }, []);
+
+  const [collapsibleParentSider, setCollapsibleParentSider] =
+    useState<string>(pagePath);
+
+  const collapsibleCaller = useCallback(
+    (path: string) => {
+      if (path !== collapsibleParentSider) {
+        setCollapsibleParentSider(path);
+      } else {
+        setCollapsibleParentSider("");
+      }
+    },
+    [collapsibleParentSider]
+  );
 
   return (
-    <Accordion
-      type="single"
-      collapsible
-      className="sticky h-[calc(100vh-48px)] p-4 col-span-1 shadow-[inset_-1px_0_0_0_var(--skeleton-border),inset_1px_0_0_0_var(--skeleton-border)] top-[48px] z-50 transition-all duration-300"
-      value={collapsibleParentSider}
-      onValueChange={collapsibleCaller}
-    >
-      {siders?.map(({ name, path, slug: siderSlug, children }) => {
+    <div className="grid p-6 grid-cols-1 place-content-start gap-4">
+      {siderMenus?.children?.map(({ name, path, children }) => {
         return (
-          <AccordionItem
-            className="border-none"
+          <Collapsible
             key={path}
-            value={siderSlug[1]}
+            isOpen={new RegExp(`^${path}(?=/?)`).test(collapsibleParentSider)}
           >
-            <AccordionTrigger className="p-2 font-semibold">
-              {name}
-            </AccordionTrigger>
-            <AccordionContent className="pl-3 grid gap-1">
-              {children?.map(
-                ({ name: childrenName, path: childrenPath, route }) => (
-                  <Link key={childrenPath} href={route}>
-                    <Toggle
-                      variant="underline"
-                      className="w-full justify-start p-2 h-7 text-nav-foreground"
-                      aria-label="Toggle italic"
-                      pressed={route === pathname}
-                    >
-                      {childrenName}
-                    </Toggle>
-                  </Link>
-                )
-              )}
-            </AccordionContent>
-          </AccordionItem>
+            <div data-slot="collapsible-trigger">
+              <div
+                className="flex items-center justify-between cursor-default"
+                onClick={() => collapsibleCaller(path)}
+              >
+                <Toggle
+                  className="text-nav-foreground pl-0"
+                  aria-label="Toggle italic"
+                  pressed={new RegExp(`^${path}(?=/?)`).test(pagePath)}
+                >
+                  {name}
+                </Toggle>
+                <ChevronUp className="h-4 w-4 transition-transform duration-300 group-data-[state=open]:rotate-180" />
+              </div>
+            </div>
+            <div
+              data-slot="collapsible-content"
+              className="grid grid-cols-1 gap-2 pt-2"
+            >
+              {children?.map(({ name: childName, path: childPath }) => (
+                <Link
+                  key={childPath}
+                  className="leading-none col-span-1"
+                  href={childPath}
+                >
+                  <Toggle
+                    className="text-nav-foreground"
+                    aria-label="Toggle italic"
+                    pressed={childPath === pagePath}
+                  >
+                    {childName}
+                  </Toggle>
+                </Link>
+              ))}
+            </div>
+          </Collapsible>
         );
       })}
-    </Accordion>
+    </div>
   );
 }

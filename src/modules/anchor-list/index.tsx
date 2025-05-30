@@ -2,12 +2,12 @@
 
 import { useState, useEffect } from "react";
 import { Toggle } from "@/components/ui/toggle";
-import type { HeadingInterfase } from "@/types/remark-plugins";
+import type { IHeadingInterfase } from "@/types/mdx";
 
 export default function AnchorList({
   headings = [],
 }: {
-  headings: HeadingInterfase[];
+  headings?: Array<IHeadingInterfase>;
 }) {
   const [activeHeading, setActiveHeading] = useState<string>("");
 
@@ -30,12 +30,12 @@ export default function AnchorList({
   }, [headings]);
 
   return (
-    <ul>
-      {headings.map((heading) => (
-        <li key={heading.id}>
+    <ul className="grid grid-cols-1 gap-2">
+      {headings?.map((heading) => (
+        <li key={heading.id} className="col-span-1">
           <a href={`#${heading.id}`}>
             <Toggle
-              variant="blod"
+              className="h-auto text-nav-foreground"
               pressed={activeHeading === heading.id}
               onClick={() => setActiveHeading(heading.id)}
             >
